@@ -1,0 +1,181 @@
+version: "3.5"
+networks:
+  mcf:
+    name: "mcf"
+services:
+  alertmanager:
+    container_name: mcf_central_alertmanager
+    entrypoint: [
+      "alertmanager",
+      "--config.file=/etc/alertmanager/config.yml",
+      "--storage.path=/alertmanager"
+    ]
+    image: prom/alertmanager:v0.15.1
+    networks:
+    - mcf
+    ports:
+    - 9093:9093
+    user: "${USER_ID}"
+    volumes:
+    - "./data/alertmanager/data:/alertmanager:Z"
+    - "./data/alertmanager/config.yml:/etc/alertmanager/config.yml:Z"
+  db-maker:
+    container_name: mcf_central_db-maker
+    image: zephinzer/db-maker:latest
+    entrypoint: ["node", "index.js"]
+    environment:
+      PORT: 2222
+    networks:
+    - mcf
+    ports:
+    - 2222:2222
+    user: "${USER_ID}"
+  elasticsearch:
+    container_name: mcf_central_elasticsearch
+    environment:
+    - "discovery.type=single-node"
+    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.1
+    networks:
+    - mcf
+    ports:
+    - 9200:9200
+    - 9300:9300
+    user: "${USER_ID}"
+    volumes:
+    - "./data/elasticsearch/data:/usr/share/elasticsearch/data"
+  elasticsearch-exporter:
+    command:
+    - '-es.uri=http://elasticsearch:9200'
+    container_name: mcf_central_elasticsearch-exporter
+    image: justwatch/elasticsearch_exporter:1.0.2
+    networks:
+    - mcf
+    ports:
+    - 9108:9108
+    restart: always
+    user: "${USER_ID}"
+  fluentd:
+    build:
+      context: ./data/fluentd
+      dockerfile: ./Dockerfile
+    container_name: mcf_central_fluentd
+    entrypoint: ["fluentd", "-c", "/etc/fluent/fluent.conf", "-v"]
+    networks:
+    - mcf
+    ports:
+    - 24231:24231
+    - 24224:24224
+    - 24224:24224/udp
+    user: "${USER_ID}"
+    volumes:
+    - "./data/fluentd/fluent.conf:/etc/fluent/fluent.conf"
+    - "./data/fluentd/data/log:/var/log"
+    depends_on:
+    - elasticsearch
+  grafana:
+    container_name: mcf_central_grafana
+    image: grafana/grafana:5.2.1
+    networks:
+    - mcf
+    ports:
+    - 13000:3000
+    user: "${USER_ID}"
+    volumes:
+    - "./data/grafana/data:/var/lib/grafana"
+    - "./data/grafana/conf/grafana.ini:/etc/grafana/grafana.ini"
+    - "./data/grafana/provisioning:/etc/grafana/provisioning"
+    depends_on:
+      - prometheus
+  kibana:
+    build:
+      context: .
+      dockerfile: ./data/kibana/Dockerfile
+    container_name: mcf_central_kibana
+    networks:
+    - mcf
+    ports:
+    - 5601:5601
+    user: "${USER_ID}"
+    volumes:
+    - "./data/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
+  mysql:
+    container_name: mcf_central_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mcf
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    image: mysql:5.7.23
+    networks:
+    - mcf
+    ports:
+    - 3306:3306
+    user: "${USER_ID}"
+    volumes:
+    - "./data/mysql/data:/var/lib/mysql"
+  mysql-exporter:
+    container_name: mcf_central_mysql-exporter
+    environment:
+      DATA_SOURCE_NAME: "root:password@(mysql:3306)/"
+    image: prom/mysqld-exporter:v0.11.0
+    networks:
+    - mcf
+    ports:
+    - 9104:9104
+    user: "${USER_ID}"
+    depends_on:
+    - mysql
+  prometheus:
+    container_name: mcf_central_prometheus
+    image: prom/prometheus:v2.3.2
+    networks:
+    - mcf
+    ports:
+    - 9090:9090
+    user: "${USER_ID}"
+    volumes:
+    - "./data/prometheus/data:/prometheus:Z"
+    - "./data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z"
+    - "./data/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:Z"
+  pulse:
+    build:
+      context: ./pulse
+      dockerfile: ./Dockerfile
+    container_name: mcf_central_pulse
+    environment:
+      DB_ROOT_PASSWORD: password
+    networks:
+    - mcf
+    ports:
+    - 54545:54545
+    user: "${USER_ID}"
+    volumes:
+    - "./pulse/index.js:/app/index.js"
+    - "./pulse/knexfile.js:/app/knexfile.js"
+    depends_on:
+    - fluentd
+  redis:
+    container_name: mcf_central_redis
+    image: redis:3.2.8
+    networks:
+    - mcf
+    ports:
+    - 6379:6379
+    user: "${USER_ID}"
+  redis-exporter:
+    container_name: mcf_central_redis-exporter
+    environment:
+      REDIS_ADDR: redis:6379
+    image: oliver006/redis_exporter
+    ports:
+    - 9121:9121
+    user: "${USER_ID}"
+  zipkin:
+    container_name: mcf_central_zipkin
+    image: openzipkin/zipkin:2.5
+    networks:
+    - mcf
+    ports:
+    - 9411:9411
+    user: "${USER_ID}"

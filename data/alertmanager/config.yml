@@ -1,0 +1,9 @@
+global:
+  resolve_timeout: 1m
+route:
+  receiver: "pulse"
+receivers:
+- name: "pulse"
+  webhook_configs:
+  - url: "http://pulse/notify"
+    send_resolved: true
