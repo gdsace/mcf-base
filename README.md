@@ -28,11 +28,11 @@ networks:
   mcf:
     external: true
 ```
-1. Connect your service in the `./docker-compose.yml` of the project by adding the following property to the service properties:
-```yaml
-networks:
-- mcf
-```
+2. Connect your service in the `./docker-compose.yml` of the project by adding the following property to the service properties:
+  ```yaml
+  networks:
+  - mcf
+  ```
 
 ## What's Included
 
