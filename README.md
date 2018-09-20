@@ -11,11 +11,11 @@ This repository contains a base development environment with central services fo
 ### This Repository
 1. Clone this repository to your local drive
 1. Spin up the base components by running:
-  1. `make dev` if you're a developer
-  1. `make ops` if you're doing devops/ops
+    1. `make dev` if you're a developer
+    1. `make ops` if you're doing devops/ops
 1. If the above ran well, append a `.d` behind it to background the tasks
-  1. `make dev.d` if you're a developer
-  1. `make ops.d` if you're doing devops/ops
+    1. `make dev.d` if you're a developer
+    1. `make ops.d` if you're doing devops/ops
 1. To create a shell into any container, use `make exec SVC="${SERVICE_ID}"` where `${SERVICE_ID}` is the ID of the listed service in the `./docker-compose.yml` file
 1. To view the logs for any container,  use `make logf SVC="${SERVICE_ID}"` where `${SERVICE_ID}` is the ID of the listed service in the `./docker-compose.yml` file
 1. For shutting down the base system, use `make down`
