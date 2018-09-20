@@ -1,10 +1,22 @@
 # make up spins up the set of central services
-up:
-	USER_ID=$$(id -u $$(whoami)) docker-compose up -V --build ${SVC}
+# - run this if you're a developer
+dev:
+	$(MAKE) up SVC="pulse mysql redis db-maker"
 
-# make up spins up the set of central services and backgrounds it
-upd:
-	USER_ID=$$(id -u $$(whoami)) docker-compose up -V --build ${SVC}
+# make up spins up the set of central services
+# - run this if you're a developer
+dev.d:
+	$(MAKE) up.d SVC="pulse mysql redis db-maker"
+
+# make up spins up the set of central services
+# - run this if you're dev/ops
+ops:
+	$(MAKE) up
+
+# make up.d spins up the set of central services and backgrounds it
+# - run this if you're dev/ops
+ops.d:
+	$(MAKE) up.d
 
 # make exec creates a shell into the service specified by SVC
 exec:
@@ -22,3 +34,13 @@ down:
 clean:
 	sudo rm -rf ./data/*/data/*
 	USER_ID=$$(id -u $$(whoami)) docker-compose rm
+
+# make up spins up the set of central services
+# * SVC: specify a set of services to run
+up:
+	USER_ID=$$(id -u $$(whoami)) docker-compose up -V --build ${SVC}
+
+# make up.d spins up the set of central services and backgrounds it
+# * SVC: specify a set of services to run
+up.d:
+	USER_ID=$$(id -u $$(whoami)) docker-compose up -V --build -d ${SVC}

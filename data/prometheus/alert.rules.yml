@@ -1,11 +1,11 @@
 groups:
 - name: "service monitoring"
   rules:
-  - alert: service_down
+  - alert: "Service DOWN"
     expr: up == 0
     for: 5s
     labels:
       severity: page
     annotations:
-      summary: "{{ $labels.job }} is down."
-      description: "{{ $labels.job }} is down."
+      summary: "[{{ $labels.alertname }}]: {{ $labels.job }}"
+      description: "{{ $labels.job }} ({{ $labels.instance }})is down.\n"

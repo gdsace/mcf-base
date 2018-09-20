@@ -11,41 +11,41 @@ alerting:
     - targets:
       - "alertmanager:9093"
 scrape_configs:
-- job_name: ElasticSearch Logs Database
+- job_name: ElasticSearch (Database)
   static_configs:
   - targets:
     - elasticsearch-exporter:9108
-- job_name: FluentD Logs Centralizer
+- job_name: FluentD (Logs Collator)
   static_configs:
   - targets:
     - fluentd:24231
-- job_name: Grafana Dashboard
+- job_name: Grafana (Metrics Dashboard)
   static_configs:
   - targets:
     - grafana:3000
-- job_name: Kibana Logs Viewer
+- job_name: Kibana (Logs Viewer)
   metrics_path: /_prometheus/metrics
   static_configs:
   - targets:
     - kibana:5601
-- job_name: MySQL Database
+- job_name: MySQL (Database)
   metrics_path: /metrics
   static_configs:
   - targets:
     - mysql-exporter:9104
-- job_name: Prometheus AlertManager
+- job_name: Alert Manager (Alerts Receiver)
   static_configs:
   - targets:
     - alertmanager:9093
-- job_name: Prometheus Metrics Collector
+- job_name: Prometheus (Metrics Collector)
   static_configs:
   - targets:
     - prometheus:9090
-- job_name: Redis Cache
+- job_name: Redis (Cache)
   static_configs:
   - targets:
     - redis-exporter:9121
-- job_name: Zipkin Distributed Tracing
+- job_name: Zipkin (Distributed Tracer)
   metrics_path: /prometheus
   static_configs:
   - targets:

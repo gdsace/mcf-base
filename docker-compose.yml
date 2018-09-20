@@ -55,6 +55,8 @@ services:
     - 9108:9108
     restart: always
     user: "${USER_ID}"
+    depends_on:
+    - elasticsearch
   fluentd:
     build:
       context: ./data/fluentd
@@ -128,7 +130,7 @@ services:
     - mysql
   prometheus:
     container_name: mcf_central_prometheus
-    image: prom/prometheus:v2.3.2
+    image: prom/prometheus:v2.4.1
     networks:
     - mcf
     ports:
@@ -168,9 +170,13 @@ services:
     environment:
       REDIS_ADDR: redis:6379
     image: oliver006/redis_exporter
+    networks:
+    - mcf
     ports:
     - 9121:9121
     user: "${USER_ID}"
+    depends_on:
+    - redis
   zipkin:
     container_name: mcf_central_zipkin
     image: openzipkin/zipkin:2.5
