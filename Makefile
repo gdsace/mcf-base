@@ -35,6 +35,14 @@ clean:
 	sudo rm -rf ./data/*/data/*
 	USER_ID=$$(id -u $$(whoami)) docker-compose rm
 
+# make ega runs the example project-a
+ega:
+	cd ./example/project-a && docker-compose up --build
+
+# make ega runs the example project-b
+egb:
+	cd ./example/project-b && docker-compose up --build
+
 # make up spins up the set of central services
 # * SVC: specify a set of services to run
 up:

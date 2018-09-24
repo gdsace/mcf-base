@@ -34,6 +34,13 @@ networks:
   - mcf
   ```
 
+### Examples
+The directory `./example` contains two sample projects that connect back to the `"mcf"` network defined in the main `./docker-compose.yml` file. See the Docker Compose files for `./example/project-a` and `./example/project-b`. Creating a new schema in the database instance is also demonstrated via the `db-ensure` project.
+
+1. Use `make dev` to setup the development environment
+1. Use `make ega` to run example A
+1. Use `make egb` to run example B
+
 ## What's Included
 
 - Observability

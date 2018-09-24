@@ -1,0 +1,28 @@
+version: "3.5"
+networks:
+  mcf:
+    name: "mcf"
+    external: true
+services:
+  project-a:
+    build:
+      context: ../project
+      dockerfile: ./Dockerfile
+    environment:
+      NAME: 'project-a'
+      PORT: 8080
+      PROXY_FROM: http://project-b:8080
+    networks:
+    - mcf
+  db-ensure:
+    build:
+      context: ../db-ensure
+      dockerfile: ./Dockerfile
+    environment:
+      DB_MAKER_ADDRESS: http://db-maker:2222
+      DB_MAKER_DB_HOST: mysql
+      DB_MAKER_DB_NAME: project_a
+      DB_MAKER_DB_USER: proj_a_user
+      DB_MAKER_DB_PASSWORD: proj_a_password
+    networks:
+    - mcf
